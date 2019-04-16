@@ -1,0 +1,23 @@
+{
+  "name": "Thermotakensity",
+  "version": "1.0.0",
+  "description": "Measure the thermodynamic intensity of opinions on Twitter using the Ingraham scale",
+  "manifest_version": 2,
+
+  "content_scripts": [{
+    "js": [
+      "jquery-3.3.1.min.js",
+      "content.js"
+    ],
+    "css": [
+    ],
+    "matches": ["https://*.twitter.com/*"],
+    "run_at": "document_end",
+    "all_frames": true
+  }],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
