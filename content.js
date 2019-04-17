@@ -1,4 +1,4 @@
-$.thermotakensity = {
+thermotakensity = {
 
     applyThermotakensity: function(node) {
         node = $(node);
@@ -34,7 +34,7 @@ $.thermotakensity = {
 
         // Slight variation of the Ratio Richter
         // https://www.dataforprogress.org/the-ratio-richter-scale/
-        let thermotakensity = Number(
+        let ingrahamScale = Number(
             Math.log(theRatio) * Math.log(totalInteractions) / Math.LN10
         ).toFixed(1);
 
@@ -43,7 +43,7 @@ $.thermotakensity = {
         // Tweets with few interactions can often create false positives.
         // In these cases, we'll simply flag the tweet as worth watching
         if ((totalInteractions < 250.0)) {
-            thermotakensity = '';
+            ingrahamScale = '';
             icon = '⚠️';
         }
 
@@ -56,7 +56,7 @@ $.thermotakensity = {
                     '</div>' +
                     '<span class="ProfileTweet-actionCount">' +
                         '<span class="ProfileTweet-actionCountForPresentation" aria-hidden="true">' +
-                            thermotakensity + '</span>' +
+                            ingrahamScale + '</span>' +
                     '</span>' +
                 '</div>' +
             '</div>'
@@ -72,41 +72,46 @@ $.thermotakensity = {
         // Search each new or changed node for hot takes
         mutations.forEach(function(mutation) {
             mutation.addedNodes.forEach(function(node) {
-                $(node)
-                    .find('div.tweet')
-                    .each(function (i, tweet) {
-                        $.thermotakensity.applyThermotakensity(tweet);
-                    });
+                thermotakensity.searchTweets(node);
             });
         });
     },
 
+    searchTweets: function(node) {
+        $(node)
+            .find('div.tweet')
+            .each(function (i, tweet) {
+                thermotakensity.applyThermotakensity(tweet);
+            });
+    },
+
     start: function() {
-        console.log('$.thermotakensity: start');
         // Do a pass on existing tweets on start-up
         $(document)
             .find('div.tweet')
             .each(function (i, node) {
-                $.thermotakensity.applyThermotakensity(node);
+                thermotakensity.applyThermotakensity(node);
             });
 
         // Setup an observer to monitor for hot takes
-        $.thermotakensity.observer = new MutationObserver($.thermotakensity.processMutations)
+        thermotakensity.observer = new MutationObserver(thermotakensity.processMutations)
             .observe(document.body, {
                 subtree: true,
-                childList: true
+                childList: true,
+                attributes: false,
+                characterData: false
             });
     },
 
     cleanup: function() {
-        $.thermotakensity.observer.disconnect()
+        thermotakensity.observer.disconnect()
     }
 };
 
 $(document).ready(function () {
-    $.thermotakensity.start();
+    thermotakensity.start();
 });
 
 $('body').bind('beforeunload',function(){
-    $.thermotakensity.cleanup();
+    thermotakensity.cleanup();
 });
